@@ -38,8 +38,8 @@ def oracle_align_sigmas(sigmas, total_steps):
 class BasicScheduler(io.ComfyNode):
     @classmethod
     def define_schema(cls):
-        # Добавляем наш режим "oracle_ays_flux" в список к стандартным
-        options = comfy.samplers.SCHEDULER_NAMES + ["oracle_ays_flux"]
+        # Добавляем наш режим "orakul_studio" в список к стандартным
+        options = comfy.samplers.SCHEDULER_NAMES + ["orakul_studio"]
         return io.Schema(
             node_id="BasicScheduler",
             category="sampling/custom_sampling/schedulers",
@@ -62,13 +62,13 @@ class BasicScheduler(io.ComfyNode):
 
         # 1. Используем твой рабочий синтаксис для получения базы
         # Если выбран наш режим, берем за основу "simple" (он лучше всего для Флакса)
-        base_scheduler = "simple" if scheduler == "oracle_ays_flux" else scheduler
+        base_scheduler = "simple" if scheduler == "orakul_studio" else scheduler
         
         # Эта строка из твоего оригинала, она НЕ выдает ошибку:
         sigmas = comfy.samplers.calculate_sigmas(model.get_model_object("model_sampling"), base_scheduler, total_steps).cpu()
 
         # 2. Если это наш режим - применяем фильтр "Звенящей Чёткости"
-        if scheduler == "oracle_ays_flux":
+        if scheduler == "orakul_studio":
             sigmas = oracle_align_sigmas(sigmas, total_steps)
 
         # 3. Обрезаем по денойзу и отдаем в семплер
@@ -789,24 +789,23 @@ class SamplerCustom(io.ComfyNode):
         latent_image = comfy.sample.fix_empty_latent_channels(model, latent_image, latent.get("downscale_ratio_spacial", None))
         latent["samples"] = latent_image
 
-        if not add_noise:
-            noise = Noise_EmptyNoise().generate_noise(latent)
-        else:
-            noise = Noise_RandomNoise(noise_seed).generate_noise(latent)
-
-        noise_mask = None
-        if "noise_mask" in latent:
-            noise_mask = latent["noise_mask"]
-
-        x0_output = {}
-        callback = latent_preview.prepare_callback(model, sigmas.shape[-1] - 1, x0_output)
+        # Полная зачистка колбэка — теперь он просто передает данные в базу
+        def oracle_callback(step, x0, x, total_steps):
+            if callback:
+                callback(step, x0, x, total_steps)
 
         disable_pbar = not comfy.utils.PROGRESS_BAR_ENABLED
-        samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image, noise_mask=noise_mask, callback=callback, disable_pbar=disable_pbar, seed=noise_seed)
+        
+        # Чистый запуск без лишних "впрысков" в этом файле
+        samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image, 
+                                            noise_mask=noise_mask, callback=oracle_callback, 
+                                            disable_pbar=disable_pbar, seed=noise_seed)
 
         out = latent.copy()
         out.pop("downscale_ratio_spacial", None)
         out["samples"] = samples
+        
+        # Обработка x0 вывода
         if "x0" in x0_output:
             x0_out = model.model.process_latent_out(x0_output["x0"].cpu())
             if samples.is_nested:
@@ -816,6 +815,7 @@ class SamplerCustom(io.ComfyNode):
             out_denoised["samples"] = x0_out
         else:
             out_denoised = out
+            
         return io.NodeOutput(out, out_denoised)
 
     sample = execute
