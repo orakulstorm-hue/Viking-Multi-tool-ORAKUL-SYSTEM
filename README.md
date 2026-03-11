@@ -13,6 +13,10 @@ While our initial R&D was conducted using the **Beta Sampler**, we **strongly re
 На видео ниже показана разница в реальном времени. Обратите внимание, как структура кадра обретает вес и плотность.
 <video src="demo.mp4" controls="controls" style="max-width: 100%;"></video>
 
+
+https://github.com/user-attachments/assets/9a512504-d5c8-48b0-864e-c506c51addf8
+
+
 ---
 
 ## 🛠 ORAKUL SYSTEM: The Power of Viking Scheduler
