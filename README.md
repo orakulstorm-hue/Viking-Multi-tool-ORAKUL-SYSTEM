@@ -11,9 +11,7 @@ While our initial R&D was conducted using the **Beta Sampler**, we **strongly re
 
 ### 🍣 Beta Sampler vs ORAKUL (Side-by-Side)
 На видео ниже показана разница в реальном времени. Обратите внимание, как структура кадра обретает вес и плотность.
-<div align="center">
-  <video src="demo.mp4" width="100%" controls></video>
-</div>
+<video src="demo.mp4" controls="controls" style="max-width: 100%;"></video>
 
 ---
 
