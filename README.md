@@ -53,7 +53,8 @@ https://github.com/user-attachments/assets/9a512504-d5c8-48b0-864e-c506c51addf8
 2. **Custom Sampler:** Перенесите наш файл `nodes_custom_sampler.py` (с заменой оригинального) в:  
    `Packages\ComfyUI\comfy_extras\`  
    *(ВАЖНО: Обязательно сохраните копию оригинального файла перед заменой).*
+   
+[Native 16-bit Master RAW (TIFF)](https://github.com/OrakulStudio/ComfyUI-Orakul-SVP-Dual-Export-Node-for-ComfyUI-PNG-to-output-16-bit-RAW-TIFF-to-output-temp_svp)
 
 ---
-[Native 16-bit Master RAW (TIFF)](https://github.com/OrakulStudio/ComfyUI-Orakul-SVP-Dual-Export-Node-for-ComfyUI-PNG-to-output-16-bit-RAW-TIFF-to-output-temp_svp)
 *Developed in the shadows. Tested on RTX 4090. Zero BS.*
